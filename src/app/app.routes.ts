@@ -8,11 +8,12 @@ import { NidPageComponent } from './pages/nid-page/nid-page.component';
 import { UserMComponent } from './pages/user-m/user-m.component';
 import { CreateAccountPageComponent } from './pages/create-account-page/create-account-page.component';
 import { authGuardCreateAcc } from './guards/authGuardCreateAcc.guard';
+import { BillingComponent } from './pages/billing/billing.component';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '',
+    redirectTo: 'billing',
     pathMatch: 'full',
   },
   // {
@@ -34,6 +35,10 @@ export const routes: Routes = [
         path: "account-created-successfully",
         component: SuccessfulAccountComponent,
         canActivate: [authGuardCreateAcc]
+    },
+    {
+      path: 'billing',
+      component: BillingComponent,
     },
   {
     path: 'settings',
