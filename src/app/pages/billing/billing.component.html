@@ -1,1 +1,79 @@
-<p>billing works!</p>
+<div class="max-w-7xl mx-auto px-4 py-6">
+  <h1 class="text-2xl font-semibold mb-6">Billing</h1>
+  <div class="flex flex-wrap gap-3 items-center mb-4">
+    <select class="border rounded px-3 py-2 text-sm" [(ngModel)]="serviceFilter">
+      <option value="">Service</option>
+      <option value="SMS Package">SMS Package</option>
+      <option value="Hot Jobs">Hot Jobs</option>
+    </select>
+    <select class="border rounded px-3 py-2 text-sm" [(ngModel)]="statusFilter">
+      <option value="">Status</option>
+      <option value="Paid">Paid</option>
+      <option value="Unpaid">Unpaid</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+    <input type="date" class="border rounded px-3 py-2 text-sm" [(ngModel)]="startDate">
+    <span>-</span>
+    <input type="date" class="border rounded px-3 py-2 text-sm" [(ngModel)]="endDate">
+    <button class="ml-2 px-3 py-2 bg-blue-600 text-white rounded text-sm" (click)="startDate = null; endDate = null;">Clear</button>
+  </div>
+  <div class="overflow-x-auto bg-white rounded shadow">
+    <table class="min-w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-3 text-left font-medium">SL</th>
+          <th class="px-4 py-3 text-left font-medium">Quotation No.</th>
+          <th class="px-4 py-3 text-left font-medium">Order Date</th>
+          <th class="px-4 py-3 text-left font-medium">Service</th>
+          <th class="px-4 py-3 text-left font-medium">Amount</th>
+          <th class="px-4 py-3 text-left font-medium">Status</th>
+          <th class="px-4 py-3 text-left font-medium">Invoice No.</th>
+          <th class="px-4 py-3 text-left font-medium">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of paginatedData">
+          <td class="px-4 py-3">{{ row.sl < 10 ? '0' + row.sl : row.sl }}</td>
+          <td class="px-4 py-3">{{ row.quotationNo }}</td>
+          <td class="px-4 py-3">{{ row.orderDate }}</td>
+          <td class="px-4 py-3">{{ row.service }}</td>
+          <td class="px-4 py-3">{{ row.amount }}</td>
+          <td class="px-4 py-3">
+            <span [ngClass]="{
+              'bg-green-100 text-green-700 px-2 py-1 rounded text-xs': row.status === 'Paid',
+              'bg-red-100 text-red-700 px-2 py-1 rounded text-xs': row.status === 'Unpaid',
+              'bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs': row.status === 'Rejected'
+            }">{{ row.status }}</span>
+          </td>
+          <td class="px-4 py-3">{{ row.invoiceNo }}</td>
+          <td class="px-4 py-3">
+            <ng-container [ngSwitch]="row.action">
+              <button *ngSwitchCase="'GoForPayment'" class="bg-blue-600 text-white px-3 py-1 rounded text-xs" (click)="goForPayment(row)">Go for payment</button>
+              <span *ngSwitchCase="'Invoice'">
+                <button class="bg-gray-100 text-blue-700 px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>
+              </span>
+              <span *ngSwitchCase="'InvoiceMethalk'">
+                <button class="bg-gray-100 text-blue-700 px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>
+                <button class="bg-gray-100 text-blue-700 px-3 py-1 rounded text-xs" (click)="methalk(row)">Methalk</button>
+              </span>
+              <button *ngSwitchCase="'Regenerate'" class="bg-gray-100 text-blue-700 px-3 py-1 rounded text-xs" (click)="regenerate(row)">Regenerate</button>
+            </ng-container>
+          </td>
+        </tr>
+        <tr *ngIf="paginatedData.length === 0">
+          <td colspan="8" class="text-center text-gray-500 py-6">No data found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flex items-center justify-between mt-4">
+    <div class="text-sm text-gray-500">Page {{ currentPage }} of {{ totalPages }}</div>
+    <div class="flex items-center gap-1">
+      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+      <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+        <button (click)="goToPage(i + 1)" [ngClass]="{'bg-blue-600 text-white border-blue-600': currentPage === (i + 1), 'bg-white text-gray-700 border-gray-300': currentPage !== (i + 1)}" class="px-2 py-1 rounded border">{{ i + 1 }}</button>
+      </ng-container>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+    </div>
+  </div>
+</div>
