@@ -116,7 +116,6 @@ export class BillingComponent {
     }
   }
 
-  // Action handlers (stubs)
   goForPayment(row: BillingRow) {
     alert('Go for payment: ' + row.invoiceNo);
   }
