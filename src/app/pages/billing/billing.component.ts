@@ -73,6 +73,7 @@ export class BillingComponent {
   statusFilter: string = '';
   startDate: string | null = null;
   endDate: string | null = null;
+  showDatePicker = false;
 
   // Pagination
   currentPage: number = 1;
@@ -130,5 +131,14 @@ export class BillingComponent {
 
   regenerate(row: BillingRow) {
     alert('Regenerate for: ' + row.invoiceNo);
+  }
+
+  
+  openDatePicker() {
+    this.showDatePicker = true;
+  }
+
+  closeDatePicker() {
+    this.showDatePicker = false;
   }
 }
