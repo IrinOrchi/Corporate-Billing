@@ -1,58 +1,58 @@
 <div class="mx-20 py-6">
   <h1 class="text-2xl font-semibold mb-6">Billing</h1>
   <div class="flex flex-wrap gap-3 items-center mb-4">
-    <select class="border rounded px-3 py-2 text-sm" [(ngModel)]="serviceFilter">
+    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="serviceFilter" style="width:200px; height:40px;">
       <option value="">Service</option>
       <option value="SMS Package">SMS Package</option>
       <option value="Hot Jobs">Hot Jobs</option>
     </select>
-    <select class="border rounded px-3 py-2 text-sm" [(ngModel)]="statusFilter">
+    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="statusFilter" style="width:200px; height:40px;">
       <option value="">Status</option>
       <option value="Paid">Paid</option>
       <option value="Unpaid">Unpaid</option>
       <option value="Rejected">Rejected</option>
     </select>
         <button
-        class="border rounded px-3 py-1 text-sm flex items-center gap-2"
-        (click)="openDatePicker()"
-        >
-        <span class="icon icon-calendar text-gray-600"></span>
-        <span style="color: #667085;">
-          {{ startDate && endDate ? (startDate | date:'shortDate') + ' – ' + (endDate | date:'shortDate') : 'Start date – End date' }}
-        </span>
-      </button>
-    <button class="ml-2 px-3 py-2 bg-[#008A22] text-white rounded text-sm" (click)="startDate = null; endDate = null;">Search</button>
+         class="border rounded-lg px-3 py-1 text-sm flex items-center gap-2" style="width:200px; height:40px;"
+         (click)="openDatePicker()"
+         >
+         <span class="icon icon-calendar text-gray-600"></span>
+         <span style="color: #667085;">
+           {{ startDate && endDate ? (startDate | date:'shortDate') + ' – ' + (endDate | date:'shortDate') : 'Start date – End date' }}
+         </span>
+       </button>
+    <button class="ml-2 px-3 py-2 bg-[#008A22] text-white rounded-lg text-sm" style="width:80px; height:40px;" (click)="startDate = null; endDate = null;">Search</button>
   </div>
   <div class="overflow-x-auto bg-white rounded shadow">
     <table class="min-w-full text-sm">
-      <thead class="bg-gray-100">
+      <thead class="bg-[#E4E7EC]">
         <tr>
-          <th class="px-4 py-3 text-left font-medium">SL</th>
-          <th class="px-4 py-3 text-left font-medium">Quotation No.</th>
-          <th class="px-4 py-3 text-left font-medium">Order Date</th>
-          <th class="px-4 py-3 text-left font-medium">Service</th>
-          <th class="px-4 py-3 text-left font-medium">Amount</th>
-          <th class="px-4 py-3 text-left font-medium">Status</th>
-          <th class="px-4 py-3 text-left font-medium">Invoice No.</th>
-          <th class="px-4 py-3 text-left font-medium">Action</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">SL</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Quotation No.</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Order Date</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Service</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Amount</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Status</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Invoice No.</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">Action</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let row of paginatedData">
-          <td class="px-4 py-3">{{ row.sl < 10 ? '0' + row.sl : row.sl }}</td>
-          <td class="px-4 py-3">{{ row.quotationNo }}</td>
-          <td class="px-4 py-3">{{ row.orderDate }}</td>
-          <td class="px-4 py-3">{{ row.service }}</td>
-          <td class="px-4 py-3">{{ row.amount }}</td>
-          <td class="px-4 py-3">
+          <td class="px-4 py-3 text-center">{{ row.sl < 10 ? '0' + row.sl : row.sl }}</td>
+          <td class="px-4 py-3 text-center">{{ row.quotationNo }}</td>
+          <td class="px-4 py-3 text-center">{{ row.orderDate }}</td>
+          <td class="px-4 py-3 text-center">{{ row.service }}</td>
+          <td class="px-4 py-3 text-center">{{ row.amount }}</td>
+          <td class="px-4 py-3 text-center">
             <span [ngClass]="{
               'bg-green-100 text-green-700 px-2 py-1 rounded text-xs': row.status === 'Paid',
               'bg-red-100 text-red-700 px-2 py-1 rounded text-xs': row.status === 'Unpaid',
               'bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs': row.status === 'Rejected'
             }">{{ row.status }}</span>
           </td>
-          <td class="px-4 py-3">{{ row.invoiceNo }}</td>
-          <td class="px-4 py-3">
+          <td class="px-4 py-3 text-center">{{ row.invoiceNo }}</td>
+          <td class="px-4 py-3 text-center">
             <ng-container [ngSwitch]="row.action">
               <button *ngSwitchCase="'GoForPayment'" class="bg-[#008A22] text-white px-3 py-1 rounded text-xs" (click)="goForPayment(row)">Go for payment</button>
               <span *ngSwitchCase="'Invoice'">
