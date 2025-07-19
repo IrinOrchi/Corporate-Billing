@@ -54,16 +54,13 @@ export class BillingComponent implements OnInit {
       EndDate: this.endDate || undefined,
       ServiceType: this.serviceFilter || undefined,
       PageSize: this.itemsPerPage,
-      PageNo: this.currentPage
+      PageNumber: this.currentPage
     }).subscribe({
       next: (res) => {
         const apiData = res.data || [];
-        // Map API data to BillingRow[]
         this.billingData = apiData.map((item: any, idx: number) => {
-          // Determine status and action
           let status: 'Unpaid' | 'Paid' | 'Rejected' = 'Unpaid';
           if (item.paid === 1) status = 'Paid';
-          // You may need to adjust this logic for 'Rejected'
           if (item.r === 1) status = 'Rejected';
 
           // Determine action
