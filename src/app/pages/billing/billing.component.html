@@ -1,28 +1,32 @@
 <div class="mx-20 py-6">
   <h1 class="text-2xl font-semibold mb-6">Billing</h1>
   <div class="flex flex-wrap gap-3 items-center mb-4">
-    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="serviceFilter" style="width:200px; height:40px;">
+    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="serviceFilter" (change)="onFilterChange()" style="width:200px; height:40px;">
       <option value="">Service</option>
       <option value="SMS Package">SMS Package</option>
       <option value="Hot Jobs">Hot Jobs</option>
     </select>
-    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="statusFilter" style="width:200px; height:40px;">
+    <select class="border rounded-lg px-3 py-2 text-sm" [(ngModel)]="statusFilter" (change)="onFilterChange()" style="width:200px; height:40px;">
       <option value="">Status</option>
       <option value="Paid">Paid</option>
       <option value="Unpaid">Unpaid</option>
       <option value="Rejected">Rejected</option>
     </select>
-        <button
-         class="border rounded-lg px-3 py-1 text-sm flex items-center gap-2" style="width:200px; height:40px;"
-         (click)="openDatePicker()"
-         >
-         <span class="icon icon-calendar text-gray-600"></span>
-         <span style="color: #667085;">
-           {{ startDate && endDate ? (startDate | date:'shortDate') + ' – ' + (endDate | date:'shortDate') : 'Start date – End date' }}
-         </span>
-       </button>
-    <button class="ml-2 px-3 py-2 bg-[#008A22] text-white rounded-lg text-sm" style="width:80px; height:40px;" (click)="startDate = null; endDate = null;">Search</button>
+    <button
+      class="border rounded-lg px-3 py-1 text-sm flex items-center gap-2" style="width:200px; height:40px;"
+      (click)="openDatePicker()"
+    >
+      <span class="icon icon-calendar text-gray-600"></span>
+      <span style="color: #667085;">
+        {{ startDate && endDate ? (startDate | date:'shortDate') + ' – ' + (endDate | date:'shortDate') : 'Start date – End date' }}
+      </span>
+    </button>
+    <button class="ml-2 px-3 py-2 bg-[#008A22] text-white rounded-lg text-sm" style="width:80px; height:40px;" (click)="onFilterChange()">Search</button>
   </div>
+
+  <div *ngIf="loading" class="text-center py-4">Loading...</div>
+  <div *ngIf="error" class="text-center text-red-500 py-4">{{ error }}</div>
+
   <div class="overflow-x-auto bg-white rounded shadow">
     <table class="min-w-full text-sm">
       <thead class="bg-[#E4E7EC]">
@@ -66,7 +70,7 @@
             </ng-container>
           </td>
         </tr>
-        <tr *ngIf="paginatedData.length === 0">
+        <tr *ngIf="paginatedData.length === 0 && !loading && !error">
           <td colspan="8" class="text-center text-gray-500 py-6">No data found.</td>
         </tr>
       </tbody>
