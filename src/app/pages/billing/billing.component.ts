@@ -126,7 +126,7 @@ export class BillingComponent implements OnInit {
   }
 
   getStatus(row: BillingHistoryItem): 'Unpaid' | 'Paid' | 'Rejected' {
-    if (row.r === 1) return 'Rejected';
+    if (row.paid === 2 || row.r === 1) return 'Rejected';
     if (row.paid === 1) return 'Paid';
     return 'Unpaid';
   }
