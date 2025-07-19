@@ -1,19 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BillingHistoryService } from '../../Services/billing/billing-history.service';
-
-export interface BillingRow {
-  sl: number;
-  quotationNo: string;
-  orderDate: string;
-  service: string;
-  amount: string;
-  status: 'Unpaid' | 'Paid' | 'Rejected';
-  invoiceNo: string;
-  action: 'GoForPayment' | 'Invoice' | 'InvoiceMethalk' | 'Regenerate';
-}
+import { BillingHistoryItem } from '../../Models/billings/billings';
+import { ModalService } from '../../Services/modal/modal.service';
+import { DateRangePickerModalComponent } from '../../components/date-range-picker-modal/date-range-picker-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-billing',
@@ -23,72 +16,60 @@ export interface BillingRow {
   styleUrl: './billing.component.scss'
 })
 export class BillingComponent implements OnInit {
-  billingData: BillingRow[] = [];
+  billingData: BillingHistoryItem[] = [];
   loading = false;
   error = '';
+
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  pageNumbers: number[] = [1];
+  lastPageReached: boolean = false;
 
   // Filters
   serviceFilter: string = '';
   statusFilter: string = '';
   startDate: string | null = null;
   endDate: string | null = null;
-  showDatePicker = false;
+  showDatePicker: boolean = false;
 
-  // Pagination
-  currentPage: number = 1;
-  itemsPerPage: number = 10;
-  totalPages: number = 1;
-  totalItems: number = 0;
+  modalService = inject(ModalService);
+  private modalSub: Subscription | null = null;
 
   constructor(private billingService: BillingHistoryService) {}
 
   ngOnInit() {
-    this.fetchData();
+    this.fetchData(1);
   }
 
-  fetchData() {
+  fetchData(page: number) {
     this.loading = true;
     this.error = '';
-    this.billingService.getBillingHistory({
-      StartDate: this.startDate || undefined,
-      EndDate: this.endDate || undefined,
-      ServiceType: this.serviceFilter || undefined,
+    const params: any = {
       PageSize: this.itemsPerPage,
-      PageNumber: this.currentPage
-    }).subscribe({
+      PageNumber: page
+    };
+    if (this.serviceFilter) params.ServiceType = this.serviceFilter;
+    if (this.statusFilter) {
+      if (this.statusFilter === 'Paid') params.Paid = 1;
+      else if (this.statusFilter === 'Unpaid') params.Paid = 0;
+      else if (this.statusFilter === 'Rejected') params.Paid = 2; // adjust if needed
+    }
+    if (this.startDate) params.StartDate = this.startDate;
+    if (this.endDate) params.EndDate = this.endDate;
+
+    this.billingService.getBillingHistory(params).subscribe({
       next: (res) => {
-        const apiData = res.data || [];
-        this.billingData = apiData.map((item: any, idx: number) => {
-          let status: 'Unpaid' | 'Paid' | 'Rejected' = 'Unpaid';
-          if (item.paid === 1) status = 'Paid';
-          if (item.r === 1) status = 'Rejected';
-
-          // Determine action
-          let action: 'GoForPayment' | 'Invoice' | 'InvoiceMethalk' | 'Regenerate' = 'GoForPayment';
-          if (status === 'Paid' && item.invoicE_NO && item.inV_DATE) {
-            action = 'InvoiceMethalk';
-          } else if (status === 'Paid' && item.invoicE_NO) {
-            action = 'Invoice';
-          } else if (status === 'Rejected') {
-            action = 'Regenerate';
-          } else {
-            action = 'GoForPayment';
+        this.billingData = res.data || [];
+        this.currentPage = page;
+        if (this.billingData.length === this.itemsPerPage) {
+          if (!this.pageNumbers.includes(page + 1)) {
+            this.pageNumbers.push(page + 1);
           }
-
-          return {
-            sl: (this.itemsPerPage * (this.currentPage - 1)) + idx + 1,
-            quotationNo: item.quotationNo || '',
-            orderDate: item.postedOn ? new Date(item.postedOn).toLocaleDateString() : '',
-            service: item.serviceName || item.rtype || '',
-            amount: item.totalAmount ? item.totalAmount + ' BDT' : '',
-            status,
-            invoiceNo: item.invoicE_NO || '',
-            action
-          };
-        });
-        // If API provides total count, use it. Otherwise, estimate.
-        this.totalItems = res.totalCount || this.billingData.length;
-        this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.itemsPerPage));
+          this.lastPageReached = false;
+        } else {
+          this.lastPageReached = true;
+        }
         this.loading = false;
       },
       error: (err) => {
@@ -99,56 +80,81 @@ export class BillingComponent implements OnInit {
     });
   }
 
-  get paginatedData(): BillingRow[] {
-    // Data is already paginated from API
-    return this.billingData;
-  }
-
   goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.fetchData();
-    }
-  }
-
-  setServiceFilter(service: string) {
-    this.serviceFilter = service;
-    this.currentPage = 1;
-    this.fetchData();
-  }
-
-  setStatusFilter(status: string) {
-    this.statusFilter = status;
-    this.currentPage = 1;
-    this.fetchData();
+    if (page < 1) return;
+    this.fetchData(page);
   }
 
   onFilterChange() {
-    this.currentPage = 1;
-    this.fetchData();
-  }
-
-  goForPayment(row: BillingRow) {
-    alert('Go for payment: ' + row.invoiceNo);
-  }
-
-  viewInvoice(row: BillingRow) {
-    alert('View invoice: ' + row.invoiceNo);
-  }
-
-  methalk(row: BillingRow) {
-    alert('Methalk for: ' + row.invoiceNo);
-  }
-
-  regenerate(row: BillingRow) {
-    alert('Regenerate for: ' + row.invoiceNo);
+    this.pageNumbers = [1];
+    this.lastPageReached = false;
+    this.fetchData(1);
   }
 
   openDatePicker() {
-    this.showDatePicker = true;
+    this.modalService.setModalConfigs({
+      attributes: {
+        modalWidth: '550px',
+      },
+      inputs: {
+        initialStartDate: this.startDate ? new Date(this.startDate) : null,
+        initialEndDate: this.endDate ? new Date(this.endDate) : null
+      },
+      componentRef: DateRangePickerModalComponent
+    });
+    if (this.modalSub) this.modalSub.unsubscribe();
+    this.modalSub = this.modalService.modalConfig$.subscribe(config => {
+      // Listen for the apply event from the modal
+      const modalElement = document.querySelector('app-date-range-picker-modal');
+      if (modalElement) {
+        // Listen for the custom event 'apply' from the modal
+        modalElement.addEventListener('apply', (event: any) => {
+          const { start, end } = event.detail;
+          this.startDate = start ? new Date(start).toISOString().split('T')[0] : null;
+          this.endDate = end ? new Date(end).toISOString().split('T')[0] : null;
+          this.modalService.closeModal();
+          this.onFilterChange();
+        }, { once: true });
+      }
+    });
   }
 
-  closeDatePicker() {
-    this.showDatePicker = false;
+  // Helpers for template
+  getSL(index: number): string {
+    const sl = (this.itemsPerPage * (this.currentPage - 1)) + index + 1;
+    return sl < 10 ? '0' + sl : String(sl);
+  }
+
+  getStatus(row: BillingHistoryItem): 'Unpaid' | 'Paid' | 'Rejected' {
+    if (row.r === 1) return 'Rejected';
+    if (row.paid === 1) return 'Paid';
+    return 'Unpaid';
+  }
+
+  getAction(row: BillingHistoryItem): 'GoForPayment' | 'Invoice' | 'InvoiceMethalk' | 'Regenerate' {
+    const status = this.getStatus(row);
+    if (status === 'Paid' && row.invoicE_NO && row.inV_DATE) {
+      return 'InvoiceMethalk';
+    } else if (status === 'Paid' && row.invoicE_NO) {
+      return 'Invoice';
+    } else if (status === 'Rejected') {
+      return 'Regenerate';
+    } else {
+      return 'GoForPayment';
+    }
+  }
+
+  // Action handlers (stub)
+  goForPayment(row: BillingHistoryItem) {
+    alert('Go for payment: ' + (row.invoicE_NO || row.quotationNo));
+  }
+  viewInvoice(row: BillingHistoryItem) {
+    alert('View invoice: ' + (row.invoicE_NO || row.quotationNo));
+  }
+  methalk(row: BillingHistoryItem) {
+    alert('Methalk for: ' + (row.invoicE_NO || row.quotationNo));
+  }
+  regenerate(row: BillingHistoryItem) {
+    alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
   }
 }

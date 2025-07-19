@@ -18,7 +18,11 @@
     >
       <span class="icon icon-calendar text-gray-600"></span>
       <span style="color: #667085;">
-        {{ startDate && endDate ? (startDate | date:'shortDate') + ' – ' + (endDate | date:'shortDate') : 'Start date – End date' }}
+        {{
+          startDate && endDate
+            ? (startDate | date:'dd MMM yyyy') + ' – ' + (endDate | date:'dd MMM yyyy')
+            : 'Start date – End date'
+        }}
       </span>
     </button>
     <button class="ml-2 px-3 py-2 bg-[#008A22] text-white rounded-lg text-sm" style="width:80px; height:40px;" (click)="onFilterChange()">Search</button>
@@ -34,7 +38,13 @@
           <th class="px-4 py-3 text-center font-medium text-[#344054]">SL</th>
           <th class="px-4 py-3 text-center font-medium text-[#344054]">Quotation No.</th>
           <th class="px-4 py-3 text-center font-medium text-[#344054]">Order Date</th>
-          <th class="px-4 py-3 text-center font-medium text-[#344054]">Service</th>
+          <th class="px-4 py-3 text-center font-medium text-[#344054]">
+            {{
+              billingData.length > 0
+                ? (billingData[0].serviceName || billingData[0].rtype || 'Service')
+                : 'Service'
+            }}
+          </th>
           <th class="px-4 py-3 text-center font-medium text-[#344054]">Amount</th>
           <th class="px-4 py-3 text-center font-medium text-[#344054]">Status</th>
           <th class="px-4 py-3 text-center font-medium text-[#344054]">Invoice No.</th>
@@ -42,22 +52,22 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of paginatedData">
-          <td class="px-4 py-3 text-center">{{ row.sl < 10 ? '0' + row.sl : row.sl }}</td>
+        <tr *ngFor="let row of billingData; let i = index">
+          <td class="px-4 py-3 text-center">{{ getSL(i) }}</td>
           <td class="px-4 py-3 text-center">{{ row.quotationNo }}</td>
-          <td class="px-4 py-3 text-center">{{ row.orderDate }}</td>
-          <td class="px-4 py-3 text-center">{{ row.service }}</td>
-          <td class="px-4 py-3 text-center">{{ row.amount }}</td>
+          <td class="px-4 py-3 text-center">{{ row.postedOn ? (row.postedOn | date:'dd MMM yyyy') : '' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.serviceName || row.rtype || '' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.totalAmount ? row.totalAmount + ' BDT' : '' }}</td>
           <td class="px-4 py-3 text-center">
             <span [ngClass]="{
-              'bg-green-100 text-green-700 px-2 py-1 rounded text-xs': row.status === 'Paid',
-              'bg-red-100 text-red-700 px-2 py-1 rounded text-xs': row.status === 'Unpaid',
-              'bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs': row.status === 'Rejected'
-            }">{{ row.status }}</span>
+              'bg-green-100 text-green-700 px-2 py-1 rounded text-xs': getStatus(row) === 'Paid',
+              'bg-red-100 text-red-700 px-2 py-1 rounded text-xs': getStatus(row) === 'Unpaid',
+              'bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs': getStatus(row) === 'Rejected'
+            }">{{ getStatus(row) }}</span>
           </td>
-          <td class="px-4 py-3 text-center">{{ row.invoiceNo }}</td>
+          <td class="px-4 py-3 text-center">{{ row.invoicE_NO || 'N/A' }}</td>
           <td class="px-4 py-3 text-center">
-            <ng-container [ngSwitch]="row.action">
+            <ng-container [ngSwitch]="getAction(row)">
               <button *ngSwitchCase="'GoForPayment'" class="bg-[#008A22] text-white px-3 py-1 rounded text-xs" (click)="goForPayment(row)">Go for payment</button>
               <span *ngSwitchCase="'Invoice'">
                 <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>
@@ -70,20 +80,20 @@
             </ng-container>
           </td>
         </tr>
-        <tr *ngIf="paginatedData.length === 0 && !loading && !error">
+        <tr *ngIf="billingData.length === 0 && !loading && !error">
           <td colspan="8" class="text-center text-gray-500 py-6">No data found.</td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="flex items-center justify-between mt-4">
-    <div class="text-sm text-gray-500">Page {{ currentPage }} of {{ totalPages }}</div>
+    <div class="text-sm text-gray-500">Page {{ currentPage }}</div>
     <div class="flex items-center gap-1">
       <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
-      <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
-        <button (click)="goToPage(i + 1)" [ngClass]="{'bg-[#0E6596] text-white border-[#0E6596]': currentPage === (i + 1), 'bg-white text-gray-700 border-gray-300': currentPage !== (i + 1)}" class="px-2 py-1 rounded border">{{ i + 1 }}</button>
+      <ng-container *ngFor="let page of pageNumbers">
+        <button (click)="goToPage(page)" [ngClass]="{'bg-[#0E6596] text-white border-[#0E6596]': currentPage === page, 'bg-white text-gray-700 border-gray-300': currentPage !== page}" class="px-2 py-1 rounded border">{{ page }}</button>
       </ng-container>
-      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="lastPageReached" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
     </div>
   </div>
 </div>

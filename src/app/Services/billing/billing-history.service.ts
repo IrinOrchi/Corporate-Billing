@@ -16,7 +16,7 @@ export class BillingHistoryService {
     let companyCookie = this.cookieService.getCookie('Company');
    ///for localhost only
     if (!companyCookie) {
-      companyCookie = 'LoginToken=f1be76088c60da1cfa281833de3b918f4ac658c840cd92854db15a12320e3f2a&ComUsrAcc=ZRd9PxCu&sCode%2DEmpl=acc34133&ComNo=ZxU0PRC%3D';
+      companyCookie = 'LoginToken=e0e7e45c0fc2d8cd6df41e42a2594b04831afe4de9b22dd5f2ddd6d772227804&ComUsrAcc=ZRd9PxCu&sCode%2DEmpl=acc34133&ComNo=ZxU0PRC%3D';
     }
    
     if (!companyCookie) return null;
@@ -31,7 +31,7 @@ export class BillingHistoryService {
     return null;
   }
 
-  getBillingHistory(params: BillingHistoryRequest): Observable<BillingHistoryResponse> {
+  getBillingHistory(params: BillingHistoryRequest = {}): Observable<BillingHistoryResponse> {
     const EncodedCompanyID = this.getCompanyIdFromCompanyCookie();
     if (!EncodedCompanyID) throw new Error('Company ID not found in Company cookie');
 
@@ -42,8 +42,8 @@ export class BillingHistoryService {
     if (params.EndDate) httpParams = httpParams.set('EndDate', params.EndDate);
     if (params.Paid !== undefined) httpParams = httpParams.set('Paid', params.Paid.toString());
     if (params.ServiceType) httpParams = httpParams.set('ServiceType', params.ServiceType);
-    if (params.PageSize) httpParams = httpParams.set('PageSize', params.PageSize.toString());
-    if (params.PageNumber) httpParams = httpParams.set('PageNumber', params.PageNumber.toString());
+    if (params.PageSize !== undefined) httpParams = httpParams.set('PageSize', params.PageSize.toString());
+    if (params.PageNumber !== undefined) httpParams = httpParams.set('PageNumber', params.PageNumber.toString());
 
     return this.http.get<BillingHistoryResponse>(this.apiUrl, { params: httpParams });
   }
