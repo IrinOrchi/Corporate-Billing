@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalService } from '../../Services/modal/modal.service';
 
-// Exported type for template usage
 export type CalendarDay = { day: number | null, type: 'current' | 'next' | 'prev' };
 
 @Component({

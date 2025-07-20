@@ -1,0 +1,45 @@
+.paid-badge {
+  background: #ECFDF3;
+  color: #067647;
+  border: 1px solid #ABEFC6;
+  min-width: 41px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  border-radius: 9999px;
+  padding: 0 8px;
+}
+.unpaid-badge {
+  background: #FEF3F2;
+  color: #B42318;
+  border: 1px solid #FECDCA;
+  min-width: 57px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  border-radius: 9999px;
+  padding: 0 8px;
+}
+.rejected-badge {
+  background: #E4E7EC;
+  color: #344054;
+  border: 1px solid #F9FAFB;
+  min-width: 67px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  border-radius: 9999px;
+  padding: 0 8px;
+}
