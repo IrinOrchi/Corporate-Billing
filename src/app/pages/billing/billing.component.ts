@@ -122,7 +122,26 @@ export class BillingComponent implements OnInit {
   }
 
   goForPayment(row: BillingHistoryItem) {
-    alert('Go for payment: ' + (row.invoicE_NO || row.quotationNo));
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://corporate3.bdjobs.com/Job_Posting_PaymentDetails.asp';
+    form.target = '_self';
+
+    const inputId = document.createElement('input');
+    inputId.type = 'hidden';
+    inputId.name = 'hdInvoiceOrJobId';
+    inputId.value = String(row.itemId);
+    form.appendChild(inputId);
+
+    const inputValue = document.createElement('input');
+    inputValue.type = 'hidden';
+    inputValue.name = 'hdInvoiceOrJobValue';
+    inputValue.value = String(row.serviceName); 
+    form.appendChild(inputValue);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
   viewInvoice(row: BillingHistoryItem) {
     alert('View invoice: ' + (row.invoicE_NO || row.quotationNo));
