@@ -14,7 +14,7 @@ export class BillingHistoryService {
 
   private getCompanyIdFromCompanyCookie(): string | null {
     let companyCookie = this.cookieService.getCookie('Company');
-   ///for localhost only
+   ///for localhost only after that no need 
     if (!companyCookie) {
       companyCookie = 'LoginToken=e0e7e45c0fc2d8cd6df41e42a2594b04831afe4de9b22dd5f2ddd6d772227804&ComUsrAcc=ZRd9PxCu&sCode%2DEmpl=acc34133&ComNo=ZxU0PRC%3D';
     }
