@@ -44,9 +44,9 @@
             <button
               class="w-7 h-7 rounded-full"
               [ngClass]="{
-                'bg-pink-600 text-white': isSelected(dayObj, 'left'),
+                'bg-[#0E73A9] text-white': isSelected(dayObj, 'left'),
                 'bg-gray-200': isInRange(dayObj, 'left'),
-                'text-pink-600': isToday(dayObj, 'left'),
+                'text-[#0E73A9]': isToday(dayObj, 'left'),
                 'text-black': !isToday(dayObj, 'left') && dayObj.type === 'current',
                 'text-gray-300': dayObj.type === 'next',
               }"
@@ -122,7 +122,7 @@
       <span class="text-gray-400">–</span>
       <input class="border rounded px-2 py-1 text-sm w-24" placeholder="End date" [value]="endDateString" readonly />
       <button class="ml-auto px-3 py-1 rounded border text-gray-600 min-w-[70px]" (click)="onCancel()">Cancel</button>
-      <button class="px-3 py-1 rounded bg-pink-600 text-white min-w-[70px]" (click)="onApply()">Apply</button>
+      <button class="px-3 py-1 rounded bg-[#0E73A9] text-white min-w-[70px]" (click)="onApply()">Apply</button>
     </div>
   </div>
 </div>

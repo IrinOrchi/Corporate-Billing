@@ -1,17 +1,15 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BillingHistoryService } from '../../Services/billing/billing-history.service';
 import { BillingHistoryItem } from '../../Models/billings/billings';
-import { ModalService } from '../../Services/modal/modal.service';
 import { DateRangePickerModalComponent } from '../../components/date-range-picker-modal/date-range-picker-modal.component';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-billing',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, DateRangePickerModalComponent],
   templateUrl: './billing.component.html',
   styleUrl: './billing.component.scss'
 })
@@ -20,18 +18,18 @@ export class BillingComponent implements OnInit {
   loading = false;
   error = '';
 
+  // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 10;
   pageNumbers: number[] = [1];
   lastPageReached: boolean = false;
+
+  // Filters
   serviceFilter: string = '';
   statusFilter: string = '';
-  startDate: string | null = null;
-  endDate: string | null = null;
+  startDate: Date | null = null;
+  endDate: Date | null = null;
   showDatePicker: boolean = false;
-
-  modalService = inject(ModalService);
-  private modalSub: Subscription | null = null;
 
   constructor(private billingService: BillingHistoryService) {}
 
@@ -52,8 +50,8 @@ export class BillingComponent implements OnInit {
       else if (this.statusFilter === 'Unpaid') params.Paid = 0;
       else if (this.statusFilter === 'Rejected') params.Paid = 2; // adjust if needed
     }
-    if (this.startDate) params.StartDate = this.startDate;
-    if (this.endDate) params.EndDate = this.endDate;
+    if (this.startDate) params.StartDate = this.startDate.toISOString().split('T')[0];
+    if (this.endDate) params.EndDate = this.endDate.toISOString().split('T')[0];
 
     this.billingService.getBillingHistory(params).subscribe({
       next: (res) => {
@@ -88,32 +86,14 @@ export class BillingComponent implements OnInit {
     this.fetchData(1);
   }
 
-  openDatePicker() {
-    this.modalService.setModalConfigs({
-      attributes: {
-        modalWidth: '550px',
-      },
-      inputs: {
-        initialStartDate: this.startDate ? new Date(this.startDate) : null,
-        initialEndDate: this.endDate ? new Date(this.endDate) : null
-      },
-      componentRef: DateRangePickerModalComponent
-    });
-    if (this.modalSub) this.modalSub.unsubscribe();
-    this.modalSub = this.modalService.modalConfig$.subscribe(config => {
-      const modalElement = document.querySelector('app-date-range-picker-modal');
-      if (modalElement) {
-        modalElement.addEventListener('apply', (event: any) => {
-          const { start, end } = event.detail;
-          this.startDate = start ? new Date(start).toISOString().split('T')[0] : null;
-          this.endDate = end ? new Date(end).toISOString().split('T')[0] : null;
-          this.modalService.closeModal();
-          this.onFilterChange();
-        }, { once: true });
-      }
-    });
+  onDateRangeApply(event: { start: Date | null, end: Date | null }) {
+    this.startDate = event.start;
+    this.endDate = event.end;
+    this.showDatePicker = false;
+    this.onFilterChange();
   }
 
+  // Helpers for template
   getSL(index: number): string {
     const sl = (this.itemsPerPage * (this.currentPage - 1)) + index + 1;
     return sl < 10 ? '0' + sl : String(sl);
@@ -138,6 +118,7 @@ export class BillingComponent implements OnInit {
     }
   }
 
+  // Action handlers (stub)
   goForPayment(row: BillingHistoryItem) {
     alert('Go for payment: ' + (row.invoicE_NO || row.quotationNo));
   }
