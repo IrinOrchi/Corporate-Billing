@@ -43,3 +43,25 @@
   border-radius: 9999px;
   padding: 0 8px;
 }
+select, select option {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+td {
+  color: #344054;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+.date-range-nowrap, .search-btn-text {
+  color: #344054 !important;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+.service-filter-border {
+  border: 1.5px solid #D0D5DD !important;
+  border-radius: 8px;
+}
