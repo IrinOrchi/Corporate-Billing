@@ -18,13 +18,11 @@ export class BillingComponent implements OnInit {
   loading = false;
   error = '';
 
-  // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 10;
   pageNumbers: number[] = [1];
   lastPageReached: boolean = false;
 
-  // Filters
   serviceFilter: string = '';
   statusFilter: string = '';
   startDate: Date | null = null;
@@ -93,7 +91,12 @@ export class BillingComponent implements OnInit {
     this.onFilterChange();
   }
 
-  // Helpers for template
+  clearDateRange() {
+    this.startDate = null;
+    this.endDate = null;
+    this.onFilterChange();
+  }
+
   getSL(index: number): string {
     const sl = (this.itemsPerPage * (this.currentPage - 1)) + index + 1;
     return sl < 10 ? '0' + sl : String(sl);
@@ -118,7 +121,6 @@ export class BillingComponent implements OnInit {
     }
   }
 
-  // Action handlers (stub)
   goForPayment(row: BillingHistoryItem) {
     alert('Go for payment: ' + (row.invoicE_NO || row.quotationNo));
   }
