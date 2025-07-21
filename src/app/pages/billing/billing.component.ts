@@ -149,7 +149,7 @@ export class BillingComponent implements OnInit {
   methalk(row: BillingHistoryItem) {
     alert('Methalk for: ' + (row.invoicE_NO || row.quotationNo));
   }
-  regenerate(row: BillingHistoryItem) {
-    alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
+  // regenerate(row: BillingHistoryItem) {
+  //   alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
   }
 }
