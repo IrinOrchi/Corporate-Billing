@@ -146,10 +146,10 @@ export class BillingComponent implements OnInit {
   viewInvoice(row: BillingHistoryItem) {
     alert('View invoice: ' + (row.invoicE_NO || row.quotationNo));
   }
-  methalk(row: BillingHistoryItem) {
-    alert('Methalk for: ' + (row.invoicE_NO || row.quotationNo));
+  mushak(row: BillingHistoryItem) {
+    alert('Mushak for: ' + (row.invoicE_NO || row.quotationNo));
   }
-  // regenerate(row: BillingHistoryItem) {
-  //   alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
+  regenerate(row: BillingHistoryItem) {
+    alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
   }
 }
