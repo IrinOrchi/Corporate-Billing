@@ -55,14 +55,13 @@ export class BillingComponent implements OnInit {
       next: (res) => {
         this.billingData = (res.data && res.data.billingHistoryList) ? res.data.billingHistoryList : [];
         this.currentPage = page;
-        if (this.billingData.length === this.itemsPerPage) {
-          if (!this.pageNumbers.includes(page + 1)) {
-            this.pageNumbers.push(page + 1);
-          }
-          this.lastPageReached = false;
-        } else {
-          this.lastPageReached = true;
+        let totalRecord = 0;
+        if (this.billingData.length > 0 && this.billingData[0].totalRecords) {
+          totalRecord = this.billingData[0].totalRecords;
         }
+        const totalPages = totalRecord ? Math.ceil(totalRecord / this.itemsPerPage) : 1;
+        this.pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+        this.lastPageReached = this.currentPage >= totalPages;
         this.loading = false;
       },
       error: (err) => {
@@ -73,8 +72,8 @@ export class BillingComponent implements OnInit {
     });
   }
 
-  goToPage(page: number) {
-    if (page < 1) return;
+  goToPage(page: number | string) {
+    if (typeof page !== 'number' || page < 1) return;
     this.fetchData(page);
   }
 
@@ -151,5 +150,44 @@ export class BillingComponent implements OnInit {
   }
   regenerate(row: BillingHistoryItem) {
     alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
+  }
+
+  getTruncatedPageNumbers(): (number | string)[] {
+    const totalPages = this.pageNumbers.length;
+    const current = this.currentPage;
+    const pages: (number | string)[] = [];
+
+    // Always show first 3 pages
+    for (let i = 1; i <= Math.min(3, totalPages); i++) {
+      pages.push(i);
+    }
+
+    // Show ellipsis if needed between 3 and current-1
+    if (current > 5 && totalPages > 5) {
+      pages.push('...');
+    }
+
+    // Show current-1, current, current+1 if in the middle
+    for (let i = Math.max(4, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
+      if (!pages.includes(i) && i > 3 && i < totalPages) {
+        pages.push(i);
+      }
+    }
+
+    // Show ellipsis if needed between current+1 and last
+    if (current < totalPages - 3 && totalPages > 5) {
+      pages.push('...');
+    }
+
+    // Always show last page if not already included
+    if (totalPages > 3) {
+      pages.push(totalPages);
+    }
+
+    return pages;
+  }
+
+  isNumber(val: any): boolean {
+    return typeof val === 'number';
   }
 }

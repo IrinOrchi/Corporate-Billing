@@ -33,6 +33,7 @@ export interface BillingHistoryItem {
   verifiedByAccounts: string | null;
   comments: string | null;
   r: number;
+  totalRecords?: number;
 }
 
 export interface BillingHistoryResponse {
