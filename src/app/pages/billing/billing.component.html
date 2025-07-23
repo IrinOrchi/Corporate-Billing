@@ -79,9 +79,11 @@
                 >
                   Go for payment
                 </button>
-                <ng-container *ngIf="row.invoicE_NO">
+                <!-- Invoice and Mushok on the same line if both present -->
+                <div *ngIf="row.invoicE_NO || row.challanId" class="flex flex-row items-center gap-2 mt-2">
                   <button
-                    class="mt-2 flex items-center gap-1 text-[#0E73A9] hover:underline"
+                    *ngIf="row.invoicE_NO"
+                    class="flex items-center gap-1 text-[#0E73A9] hover:underline"
                     style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
                     (click)="viewInvoice(row)"
                   >
@@ -95,7 +97,7 @@
                   </button>
                   <button
                     *ngIf="row.challanId"
-                    class="mt-2 flex items-center gap-1 text-[#0E73A9] hover:underline"
+                    class="flex items-center gap-1 text-[#0E73A9] hover:underline"
                     style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
                     (click)="mushak(row)"
                   >
@@ -107,7 +109,7 @@
                       </svg>
                     </span>
                   </button>
-                </ng-container>
+                </div>
               </div>
               <span *ngSwitchCase="'Invoice'">
                 <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>

@@ -202,29 +202,24 @@ export class BillingComponent implements OnInit {
     const current = this.currentPage;
     const pages: (number | string)[] = [];
 
-    // Always show first 3 pages
     for (let i = 1; i <= Math.min(3, totalPages); i++) {
       pages.push(i);
     }
 
-    // Show ellipsis if needed between 3 and current-1
     if (current > 5 && totalPages > 5) {
       pages.push('...');
     }
 
-    // Show current-1, current, current+1 if in the middle
     for (let i = Math.max(4, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
       if (!pages.includes(i) && i > 3 && i < totalPages) {
         pages.push(i);
       }
     }
 
-    // Show ellipsis if needed between current+1 and last
     if (current < totalPages - 3 && totalPages > 5) {
       pages.push('...');
     }
 
-    // Always show last page if not already included
     if (totalPages > 3) {
       pages.push(totalPages);
     }
