@@ -34,6 +34,7 @@ export interface BillingHistoryItem {
   comments: string | null;
   r: number;
   totalRecords?: number;
+  challanId?: number;
 }
 
 export interface BillingHistoryResponse {

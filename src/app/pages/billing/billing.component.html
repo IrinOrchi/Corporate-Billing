@@ -93,6 +93,20 @@
                       </svg>
                     </span>
                   </button>
+                  <button
+                    *ngIf="row.challanId"
+                    class="mt-2 flex items-center gap-1 text-[#0E73A9] hover:underline"
+                    style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
+                    (click)="mushak(row)"
+                  >
+                    Mushok
+                    <span style="display:inline-block; transform:translateY(2px);">
+                      <svg width="16" height="16" fill="none" stroke="#0E73A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3v7m0 0l-3-3m3 3l3-3"/>
+                        <path d="M3 13h10"/>
+                      </svg>
+                    </span>
+                  </button>
                 </ng-container>
               </div>
               <span *ngSwitchCase="'Invoice'">

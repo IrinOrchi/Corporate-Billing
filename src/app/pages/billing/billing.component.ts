@@ -169,7 +169,29 @@ export class BillingComponent implements OnInit {
     document.body.removeChild(form);
   }
   mushak(row: BillingHistoryItem) {
-    alert('Mushak for: ' + (row.invoicE_NO || row.quotationNo));
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://corporate3.bdjobs.com/DownloadMushok_Init.asp';
+    form.target = '_blank';
+
+    const addField = (name: string, value: string | number | null) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value !== null && value !== undefined ? String(value) : '';
+      form.appendChild(input);
+    };
+
+    addField('QID', row.quotationID);
+    addField('hidInvoiceOrJobId', row.itemId);
+    addField('hidServiceName', row.serviceName);
+    addField('perJobVat', 0);
+    addField('perJobPrice', 0);
+    addField('challanId', row.challanId !== undefined ? row.challanId : null);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
   regenerate(row: BillingHistoryItem) {
     alert('Regenerate for: ' + (row.invoicE_NO || row.quotationNo));
