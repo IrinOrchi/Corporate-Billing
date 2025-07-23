@@ -40,6 +40,9 @@ export interface BillingHistoryResponse {
   dataContext: any;
   responseCode: number;
   requestedData: any;
-  data: BillingHistoryItem[];
+  data: {
+    billingHistoryList: BillingHistoryItem[];
+    [key: string]: any;
+  } | null;
   totalCount?: number;
 } 

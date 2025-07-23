@@ -53,7 +53,7 @@ export class BillingComponent implements OnInit {
 
     this.billingService.getBillingHistory(params).subscribe({
       next: (res) => {
-        this.billingData = res.data || [];
+        this.billingData = (res.data && res.data.billingHistoryList) ? res.data.billingHistoryList : [];
         this.currentPage = page;
         if (this.billingData.length === this.itemsPerPage) {
           if (!this.pageNumbers.includes(page + 1)) {
