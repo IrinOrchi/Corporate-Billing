@@ -22,6 +22,7 @@ export class BillingComponent implements OnInit {
   itemsPerPage: number = 10;
   pageNumbers: number[] = [1];
   lastPageReached: boolean = false;
+  totalPages: number = 1;
 
   serviceFilter: string = '';
   statusFilter: string = '';
@@ -44,9 +45,9 @@ export class BillingComponent implements OnInit {
     };
     if (this.serviceFilter) params.ServiceType = this.serviceFilter;
     if (this.statusFilter) {
-      if (this.statusFilter === 'Paid') params.Paid = 1;
-      else if (this.statusFilter === 'Unpaid') params.Paid = 0;
-      else if (this.statusFilter === 'Rejected') params.Paid = 2; // adjust if needed
+      if (this.statusFilter === 'Paid') params.Paid = 'paid';
+      else if (this.statusFilter === 'Unpaid') params.Paid = 'unpaid';
+      else if (this.statusFilter === 'Pending Approval') params.Paid = 'pending';
     }
     if (this.startDate) params.StartDate = this.startDate.toISOString().split('T')[0];
     if (this.endDate) params.EndDate = this.endDate.toISOString().split('T')[0];
@@ -59,9 +60,9 @@ export class BillingComponent implements OnInit {
         if (this.billingData.length > 0 && this.billingData[0].totalRecords) {
           totalRecord = this.billingData[0].totalRecords;
         }
-        const totalPages = totalRecord ? Math.ceil(totalRecord / this.itemsPerPage) : 1;
-        this.pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-        this.lastPageReached = this.currentPage >= totalPages;
+        this.totalPages = totalRecord ? Math.ceil(totalRecord / this.itemsPerPage) : 1;
+        this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+        this.lastPageReached = this.currentPage >= this.totalPages;
         this.loading = false;
       },
       error: (err) => {
@@ -132,18 +133,40 @@ export class BillingComponent implements OnInit {
     inputId.value = String(row.itemId);
     form.appendChild(inputId);
 
-    const inputValue = document.createElement('input');
-    inputValue.type = 'hidden';
-    inputValue.name = 'hdInvoiceOrJobValue';
-    inputValue.value = String(row.serviceName); 
-    form.appendChild(inputValue);
+    // const inputValue = document.createElement('input');
+    // inputValue.type = 'hidden';
+    // inputValue.name = 'hdInvoiceOrJobValue';
+    // inputValue.value = String(row.serviceName); 
+    // form.appendChild(inputValue);
 
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
   }
   viewInvoice(row: BillingHistoryItem) {
-    alert('View invoice: ' + (row.invoicE_NO || row.quotationNo));
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://corporate3.bdjobs.com/DownloadInvoice_init.asp';
+    form.target = '_blank'; 
+
+    const addField = (name: string, value: string | number | null) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value !== null && value !== undefined ? String(value) : '';
+      form.appendChild(input);
+    };
+
+    addField('QID', row.quotationID);
+    addField('hidInvoiceOrJobId', row.itemId);
+    addField('hidServiceName', row.serviceName);
+    addField('perJobVat', 0);
+    addField('perJobPrice', 0);
+    addField('invoiceId', row.invoiceId);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
   mushak(row: BillingHistoryItem) {
     alert('Mushak for: ' + (row.invoicE_NO || row.quotationNo));

@@ -13,7 +13,7 @@
       <option value="">Status</option>
       <option value="Paid">Paid</option>
       <option value="Unpaid">Unpaid</option>
-      <option value="Rejected">Rejected</option>
+      <option value="Pending Approval">Pending Approval</option>
     </select>
     <button
       class="border service-filter-border rounded-lg px-3 py-1 text-sm flex items-center gap-2"
@@ -56,16 +56,16 @@
       <tbody>
         <tr *ngFor="let row of billingData; let i = index">
           <td class="px-4 py-3 text-center">{{ getSL(i) }}</td>
-          <td class="px-4 py-3 text-center">{{ row.quotationNo }}</td>
-          <td class="px-4 py-3 text-center">{{ row.postedOn ? (row.postedOn | date:'dd MMM yyyy') : '' }}</td>
-          <td class="px-4 py-3 text-center">{{ row.serviceName || row.rtype || '' }}</td>
-          <td class="px-4 py-3 text-center">{{ row.totalAmount ? row.totalAmount + ' BDT' : '' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.quotationNo || 'N/A' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.postedOn ? (row.postedOn | date:'dd MMM yyyy') : 'N/A' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.serviceName || row.rtype || 'N/A' }}</td>
+          <td class="px-4 py-3 text-center">{{ row.totalAmount != null ? row.totalAmount + ' BDT' : 'N/A' }}</td>
           <td class="px-4 py-3 text-center">
             <span [ngClass]="{
               'paid-badge': getStatus(row) === 'Paid',
               'unpaid-badge': getStatus(row) === 'Unpaid',
               'rejected-badge': getStatus(row) === 'Rejected'
-            }">{{ getStatus(row) }}</span>
+            }">{{ getStatus(row) || 'N/A' }}</span>
           </td>
           <td class="px-4 py-3 text-center">{{ row.invoicE_NO || 'N/A' }}</td>
           <td class="px-4 py-3 text-center">
@@ -113,7 +113,7 @@
     </table>
   </div>
   <div class="flex items-center justify-between mt-4">
-    <div class="text-sm text-gray-500">Page {{ currentPage }}</div>
+    <div class="text-sm text-gray-500">Page {{ currentPage }} of {{ totalPages }}</div>
     <div class="flex items-center gap-1">
       <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded border text-gray-500 bg-white disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
       <ng-container *ngFor="let page of getTruncatedPageNumbers()">
