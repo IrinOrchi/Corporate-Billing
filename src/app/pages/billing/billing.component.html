@@ -76,56 +76,63 @@
             </td>
             <td class="px-4 py-3 text-center">{{ row.invoicE_NO || 'N/A' }}</td>
             <td class="px-4 py-3 text-center">
-              <ng-container [ngSwitch]="getAction(row)">
-                <div class="flex flex-col items-center">
-                  <button
-                    *ngSwitchCase="'GoForPayment'"
-                    class="bg-[#008A22] hover:bg-[#006B1F] text-white"
-                    style="width:216px; height:36px; border-radius:8px; font-size:14px; font-family:'Inter',sans-serif; font-weight:500;"
-                    (click)="goForPayment(row)"
-                  >
-                    Go for payment
-                  </button>
-                  <div *ngIf="row.invoicE_NO || row.challanId" class="flex flex-row items-center gap-2 mt-2">
+              @switch (getAction(row)) {
+                @case ('GoForPayment') {
+                  <div class="flex flex-col items-center">
                     <button
-                      *ngIf="row.invoicE_NO"
-                      class="flex items-center gap-1 text-[#0E73A9] hover:underline"
-                      style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
-                      (click)="viewInvoice(row)"
+                      class="bg-[#008A22] hover:bg-[#006B1F] text-white"
+                      style="width:216px; height:36px; border-radius:8px; font-size:14px; font-family:'Inter',sans-serif; font-weight:500;"
+                      (click)="goForPayment(row)"
                     >
-                      Invoice
-                      <span style="display:inline-block; transform:translateY(2px);">
-                        <svg width="16" height="16" fill="none" stroke="#0E73A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M8 3v7m0 0l-3-3m3 3l3-3"/>
-                          <path d="M3 13h10"/>
-                        </svg>
-                      </span>
+                      Go for payment
                     </button>
-                    <button
-                      *ngIf="row.challanId"
-                      class="flex items-center gap-1 text-[#0E73A9] hover:underline"
-                      style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
-                      (click)="mushak(row)"
-                    >
-                      Mushok
-                      <span style="display:inline-block; transform:translateY(2px);">
-                        <svg width="16" height="16" fill="none" stroke="#0E73A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M8 3v7m0 0l-3-3m3 3l3-3"/>
-                          <path d="M3 13h10"/>
-                        </svg>
-                      </span>
-                    </button>
+                    @if (row.invoicE_NO || row.challanId) {
+                      <div class="flex flex-row items-center gap-2 mt-2">
+                        @if (row.invoicE_NO) {
+                          <button
+                            class="flex items-center gap-1 text-[#0E73A9] hover:underline"
+                            style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
+                            (click)="viewInvoice(row)"
+                          >
+                            Invoice
+                            <span style="display:inline-block; transform:translateY(2px);">
+                              <svg width="16" height="16" fill="none" stroke="#0E73A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 3v7m0 0l-3-3m3 3l3-3"/>
+                                <path d="M3 13h10"/>
+                              </svg>
+                            </span>
+                          </button>
+                        }
+                        @if (row.challanId) {
+                          <button
+                            class="flex items-center gap-1 text-[#0E73A9] hover:underline"
+                            style="background:none; border:none; font-size:14px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;"
+                            (click)="mushak(row)"
+                          >
+                            Mushok
+                            <span style="display:inline-block; transform:translateY(2px);">
+                              <svg width="16" height="16" fill="none" stroke="#0E73A9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 3v7m0 0l-3-3m3 3l3-3"/>
+                                <path d="M3 13h10"/>
+                              </svg>
+                            </span>
+                          </button>
+                        }
+                      </div>
+                    }
                   </div>
-                </div>
-                <span *ngSwitchCase="'Invoice'">
+                }
+                @case ('Invoice') {
                   <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>
-                </span>
-                <span *ngSwitchCase="'InvoiceMushak'">
+                }
+                @case ('InvoiceMushak') {
                   <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs mr-1" (click)="viewInvoice(row)">Invoice</button>
                   <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs" (click)="mushak(row)">Mushok</button>
-                </span>
-                <button *ngSwitchCase="'Regenerate'" class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs" (click)="regenerate(row)">Regenerate</button>
-              </ng-container>
+                }
+                @case ('Regenerate') {
+                  <button class="bg-gray-100 text-[#0E6596] px-3 py-1 rounded text-xs" (click)="regenerate(row)">Regenerate</button>
+                }
+              }
             </td>
           </tr>
         }
