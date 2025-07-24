@@ -108,10 +108,10 @@ export class BillingComponent implements OnInit {
     return 'Unpaid';
   }
 
-  getAction(row: BillingHistoryItem): 'GoForPayment' | 'Invoice' | 'InvoiceMethalk' | 'Regenerate' {
+  getAction(row: BillingHistoryItem): 'GoForPayment' | 'Invoice' | 'InvoiceMushak' | 'Regenerate' {
     const status = this.getStatus(row);
     if (status === 'Paid' && row.invoicE_NO && row.inV_DATE) {
-      return 'InvoiceMethalk';
+      return 'InvoiceMushak';
     } else if (status === 'Paid' && row.invoicE_NO) {
       return 'Invoice';
     } else if (status === 'Rejected') {
