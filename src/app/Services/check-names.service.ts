@@ -43,7 +43,6 @@ export class CheckNamesService {
   }
 
 
-  // Check for unique username
   checkUniqueUserName(userName: string): Observable<CheckNamesResponseDTO> {
     if (!userName || userName.length < 3 || userName.length > 20) {
       return throwError(() => new Error('UserName must be between 3 and 20 characters.'));
@@ -62,7 +61,6 @@ export class CheckNamesService {
     );
   }
 
-  // Check for unique company name
   checkUniqueCompanyName(companyName: string): Observable<CheckNamesResponseDTO> {
     if (!companyName) {
       return throwError(() => new Error('CompanyName is required.'));
@@ -81,7 +79,6 @@ export class CheckNamesService {
     );
   }
 
-  // Fetch industry types from API using POST method
   fetchIndustryTypes(IndustryId?: number): Observable<IndustryTypeResponseDTO[]> {
     const request: IndustryTypeRequestDTO = {
       IndustryId: IndustryId ?? undefined,  
@@ -97,7 +94,6 @@ export class CheckNamesService {
     );
   }
 
-  // Fetch industry names based on type
   fetchIndustryNamesByType(industryId: number): Observable<IndustryTypeResponseDTO[]> {
     const request: IndustryTypeRequestDTO = {
       IndustryId: industryId,  
@@ -113,7 +109,6 @@ export class CheckNamesService {
     );
   }
 
-  // Get all industry IDs
   getAllIndustryIds(): Observable<IndustryType[]> {
     return this.http.get<any>(this.industryIdApiUrl).pipe(
       catchError((error) => {
@@ -123,7 +118,6 @@ export class CheckNamesService {
     );
   }
 
-  // Method to get locations (districts, countries, or thanas)
   getLocations(requestPayload: LocationRequestDTO): Observable<LocationResponseDTO[]> {
     return this.http.post<LocationResponseDTO[]>(this.locationApiUrl, requestPayload).pipe(
       catchError((error) => {
@@ -133,7 +127,6 @@ export class CheckNamesService {
     );
   }
 
-  //  payload for locations
   private createRequestPayload(outsideBd: boolean, districtId: string = ''): LocationRequestDTO {
     return {
       OutsideBd: outsideBd ? '1' : '0',
@@ -146,21 +139,18 @@ export class CheckNamesService {
     return this.getLocations(requestPayload);
   }
 
-  // Fetch thanas based on districtId
   fetchThanas(districtId: string): Observable<LocationResponseDTO[]> {
     const requestPayload = this.createRequestPayload(false, districtId);
     return this.getLocations(requestPayload);
   }
 
   
-  // Method to verify RL number
   verifyRLNo(request: RLNoRequestModel): Observable<any> {
     return this.http.post(this.rlnoapiUrl, request);
   }
  
 
  
-  // Method to insert account data
   insertAccount(data: any): Observable<CreateAccountResponseDTO> {
     return this.http.post<CreateAccountResponseDTO>(this.insertAccountApiUrl, data).pipe(
       catchError((error) => {
@@ -170,7 +160,6 @@ export class CheckNamesService {
     );
   }
 
-  // Get company information for edit account
   getCompanyInformation(): Observable<any> {
     const companyId = localStorage.getItem('CompanyId');
     if (!companyId) {
