@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalService } from '../../Services/modal/modal.service';
-
 export type CalendarDay = { day: number | null, type: 'current' | 'next' | 'prev' };
 
 @Component({
@@ -26,13 +24,16 @@ export class DateRangePickerModalComponent {
   startDate: Date | null = null;
   endDate: Date | null = null;
 
+  startDateInput: string = '';
+  endDateInput: string = '';
+
   months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
   years: number[] = [];
 
-  constructor(private modalService: ModalService) {}
+  selectionSource: 'left' | 'right' | null = null;
 
   ngOnInit() {
     document.body.classList.add('overflow-hidden');
@@ -48,6 +49,8 @@ export class DateRangePickerModalComponent {
     }
     this.startDate = this.initialStartDate;
     this.endDate = this.initialEndDate;
+    this.startDateInput = this.startDate ? this.formatDate(this.startDate) : '';
+    this.endDateInput = this.endDate ? this.formatDate(this.endDate) : '';
     this.years = [];
     for (let y = 1900; y <= 2100; y++) {
       this.years.push(y);
@@ -61,11 +64,57 @@ export class DateRangePickerModalComponent {
     return this.generateCalendarDays(this.displayYearRight, this.displayMonthRight);
   }
 
-  public get startDateString() {
-    return this.startDate ? this.formatDate(this.startDate) : '';
+  // Remove startDateString/endDateString getter/setter
+
+  // When user blurs input, parse and update date
+  onStartDateInputBlur() {
+    this.startDate = this.parseDate(this.startDateInput);
+    this.startDateInput = this.startDate ? this.formatDate(this.startDate) : this.startDateInput;
+    if (this.startDate) {
+      this.displayYearLeft = this.startDate.getFullYear();
+      this.displayMonthLeft = this.startDate.getMonth();
+    }
   }
-  public get endDateString() {
-    return this.endDate ? this.formatDate(this.endDate) : '';
+  onEndDateInputBlur() {
+    this.endDate = this.parseDate(this.endDateInput);
+    this.endDateInput = this.endDate ? this.formatDate(this.endDate) : this.endDateInput;
+    if (this.endDate) {
+      this.displayYearRight = this.endDate.getFullYear();
+      this.displayMonthRight = this.endDate.getMonth();
+    }
+  }
+
+  private parseDate(value: string): Date | null {
+    if (!value) return null;
+    value = value.replace(/\//g, '-');
+    const parts = value.split('-');
+    if (parts.length !== 3) return null;
+    let y: number | undefined, m: number | undefined, d: number | undefined;
+    let yearIdx = parts.findIndex(p => p.length === 4);
+    if (yearIdx === -1) return null; 
+    y = Number(parts[yearIdx]);
+    const idxs = [0, 1, 2].filter(i => i !== yearIdx);
+    let first = Number(parts[idxs[0]]);
+    let second = Number(parts[idxs[1]]);
+    if (first > 12 && second <= 12) {
+      d = first;
+      m = second;
+    } else if (second > 12 && first <= 12) {
+      d = second;
+      m = first;
+    } else {
+      m = first;
+      d = second;
+    }
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+      m = Math.max(1, Math.min(12, m));
+      d = Math.max(1, Math.min(31, d));
+      const date = new Date(y, m - 1, d);
+      if (date && date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d) {
+        return date;
+      }
+    }
+    return null;
   }
 
   generateCalendarDays(year: number, month: number): CalendarDay[] {
@@ -82,6 +131,7 @@ export class DateRangePickerModalComponent {
     return days;
   }
 
+  // When calendar changes, update both date and input string
   public selectDate(dayObj: CalendarDay, which: 'left' | 'right') {
     if (!dayObj.day || dayObj.type !== 'current') return;
     const year = which === 'left' ? this.displayYearLeft : this.displayYearRight;
@@ -89,28 +139,58 @@ export class DateRangePickerModalComponent {
     const date = new Date(year, month, dayObj.day);
     if (!this.startDate || (this.startDate && this.endDate)) {
       this.startDate = date;
+      this.startDateInput = this.formatDate(date);
       this.endDate = null;
+      this.endDateInput = '';
+      this.selectionSource = which;
     } else if (date < this.startDate) {
       this.startDate = date;
+      this.startDateInput = this.formatDate(date);
       this.endDate = null;
+      this.endDateInput = '';
+      this.selectionSource = which;
     } else {
       this.endDate = date;
+      this.endDateInput = this.formatDate(date);
+   
+      const startMonth = this.startDate.getMonth();
+      const startYear = this.startDate.getFullYear();
+      const endMonth = this.endDate.getMonth();
+      const endYear = this.endDate.getFullYear();
+      if ((which === this.selectionSource) && (startMonth === endMonth && startYear === endYear)) {
+      } else {
+        this.selectionSource = null;
+      }
     }
   }
 
   public isSelected(dayObj: CalendarDay, which: 'left' | 'right') {
     if (!dayObj.day || dayObj.type !== 'current') return false;
+    
+    const isSameMonth = this.displayYearLeft === this.displayYearRight && 
+                       this.displayMonthLeft === this.displayMonthRight;
+    
+    if (isSameMonth && which === 'right') {
+      return false;
+    }
+    
     const year = which === 'left' ? this.displayYearLeft : this.displayYearRight;
     const month = which === 'left' ? this.displayMonthLeft : this.displayMonthRight;
     const date = new Date(year, month, dayObj.day);
-    return (
-      (this.startDate && this.datesEqual(date, this.startDate)) ||
-      (this.endDate && this.datesEqual(date, this.endDate))
-    );
+    return (this.startDate && this.datesEqual(date, this.startDate)) ||
+           (this.endDate && this.datesEqual(date, this.endDate));
   }
 
   public isInRange(dayObj: CalendarDay, which: 'left' | 'right') {
     if (!dayObj.day || dayObj.type !== 'current' || !this.startDate || !this.endDate) return false;
+    
+    const isSameMonth = this.displayYearLeft === this.displayYearRight && 
+                       this.displayMonthLeft === this.displayMonthRight;
+    
+    if (isSameMonth && which === 'right') {
+      return false;
+    }
+    
     const year = which === 'left' ? this.displayYearLeft : this.displayYearRight;
     const month = which === 'left' ? this.displayMonthLeft : this.displayMonthRight;
     const date = new Date(year, month, dayObj.day);
@@ -202,12 +282,17 @@ export class DateRangePickerModalComponent {
   public onCancel() {
     document.body.classList.remove('overflow-hidden');
     this.cancel.emit();
-    this.modalService.closeModal();
   }
 
+  // On Apply, parse and update dates from input
   public onApply() {
     document.body.classList.remove('overflow-hidden');
+    this.startDate = this.parseDate(this.startDateInput);
+    this.endDate = this.parseDate(this.endDateInput);
     this.apply.emit({ start: this.startDate, end: this.endDate });
-    this.modalService.closeModal();
+  }
+
+  ngOnDestroy() {
+    document.body.classList.remove('overflow-hidden');
   }
 } 
