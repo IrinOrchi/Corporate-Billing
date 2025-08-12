@@ -40,14 +40,12 @@ export class ChangePasswordComponent implements OnInit {
   isNewPassPatternValid = signal<patternValidation>('empty');
   isConfirmPassPatternValid = signal<patternValidation>('empty');
 
-  private isFirstTimeCheck = true; // Flag to track first-time check  
+  private isFirstTimeCheck = true; 
 
 
   ngOnInit(): void {
     this.oldPasswordControl().valueChanges.subscribe((val) => {
       this.isOldPasswordValid()
-      // this.checkPatternValidity();
-      // console.log(val, 'val');
       this.showErrorMsgOldPass.set(false)
       if (val === '') {
         this.isOldPasswordEmpty.set(true)
