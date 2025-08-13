@@ -31,7 +31,6 @@ export class ChangePasswordComponent implements OnInit {
   userId = this.localStorageService.getItem(UserId)
   userName = this.localStorageService.getItem(UserName)
 
-  // isSubmited = signal(false)
   showErrorMsgOldPass = signal(false);
   isOldPasswordMatch = signal(true);
   isOldPasswordEmpty = signal(true)
@@ -113,7 +112,6 @@ export class ChangePasswordComponent implements OnInit {
     const pwd = this.newPasswordControl().value ?? '';
     const newPwd = this.confirmPasswordControl().value ?? '';
 
-    // Check if either field is empty
     if (pwd.length === 0 || newPwd.length === 0) {
       this.isConfirmPassMatch.set('empty');
       return false;
