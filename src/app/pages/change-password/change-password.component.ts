@@ -130,16 +130,14 @@ export class ChangePasswordComponent implements OnInit {
   isOldPasswordValid(): boolean {
     const oldPasswd = this.oldPasswordControl().value ?? '';
 
-    // Skip validation if empty
     if (!oldPasswd.trim()) {
-      return true; // or false, depending on your requirement
+      return true; 
     }
 
     const isValid = /^[^'"%<>”&(),\s]*$/.test(oldPasswd);
 
     if (!isValid) {
       this.isOldPassPatternValid.set('notValid')
-      // console.log('Old password contains invalid characters (avoid \' " , % < > or spaces)');
     } else {
       this.isOldPassPatternValid.set('valid')
       // console.log('Old password is valid');
