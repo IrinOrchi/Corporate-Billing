@@ -140,7 +140,6 @@ export class ChangePasswordComponent implements OnInit {
       this.isOldPassPatternValid.set('notValid')
     } else {
       this.isOldPassPatternValid.set('valid')
-      // console.log('Old password is valid');
     }
 
     return isValid;
@@ -149,19 +148,16 @@ export class ChangePasswordComponent implements OnInit {
   isNewPasswordValid(): boolean {
     const newPasswd = this.newPasswordControl().value ?? '';
 
-    // Skip validation if empty
     if (!newPasswd.trim()) {
-      return true; // or false, depending on your requirement
+      return true;
     }
 
     const isValid = /^[^'"%<>”&(),\s]*$/.test(newPasswd);
 
     if (!isValid) {
       this.isNewPassPatternValid.set('notValid')
-      // console.log('New password contains invalid characters (avoid \' " , % < > or spaces)');
     } else {
       this.isNewPassPatternValid.set('valid')
-      // console.log('New password is valid');
     }
 
     return isValid;
