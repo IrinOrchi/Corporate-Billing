@@ -166,18 +166,15 @@ export class ChangePasswordComponent implements OnInit {
   isConfirmPasswordValid(): boolean {
     const confirmPasswd = this.confirmPasswordControl().value ?? '';
 
-    // Skip validation if empty
     if (!confirmPasswd.trim()) {
-      return true; // or false, depending on your requirement
+      return true;
     }
     const isValid = /^[^'"%<>”&(),\s]*$/.test(confirmPasswd);
 
     if (!isValid) {
       this.isConfirmPassPatternValid.set('notValid')
-      // console.log('Confirm password contains invalid characters (avoid \' " , % < > or spaces)');
     } else {
       this.isConfirmPassPatternValid.set('valid')
-      // console.log('Confirm password is valid');
     }
 
     return isValid;
