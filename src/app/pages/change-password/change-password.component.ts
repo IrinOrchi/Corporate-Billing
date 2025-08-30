@@ -193,8 +193,7 @@ export class ChangePasswordComponent implements OnInit {
 
   updatePassword() {
     this.showErrorMsgOldPass.set(false);
-    // this.isSubmited.set(true)
-    // this.checkPatternValidity()
+   
     this.isPasswordMatch()
 
     const passInformation = {
