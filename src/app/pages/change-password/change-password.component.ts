@@ -54,12 +54,10 @@ export class ChangePasswordComponent implements OnInit {
       }
     })
     this.newPasswordControl().valueChanges.subscribe(() => {
-      // this.checkPatternValidity();
       this.isNewPasswordValid()
       this.isPasswordMatch();
     })
     this.confirmPasswordControl().valueChanges.subscribe(() => {
-      // this.checkPatternValidity()
       this.isConfirmPasswordValid()
       this.isPasswordMatch();
     })
