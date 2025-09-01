@@ -106,24 +106,24 @@ export class ChangePasswordComponent implements OnInit {
     return this.updatePassForm.get('confirmPassword') as any as FormControl
   })
 
-  // isPasswordMatch(): boolean {
-  //   const pwd = this.newPasswordControl().value ?? '';
-  //   const newPwd = this.confirmPasswordControl().value ?? '';
+  isPasswordMatch(): boolean {
+    const pwd = this.newPasswordControl().value ?? '';
+    const newPwd = this.confirmPasswordControl().value ?? '';
 
-  //   if (pwd.length === 0 || newPwd.length === 0) {
-  //     this.isConfirmPassMatch.set('empty');
-  //     return false;
-  //   }
+    if (pwd.length === 0 || newPwd.length === 0) {
+      this.isConfirmPassMatch.set('empty');
+      return false;
+    }
 
-  //   if (pwd === newPwd) {
-  //     this.isConfirmPassMatch.set('match');
-  //     return true;
-  //   }
-  //   else {
-  //     this.isConfirmPassMatch.set('not-match');
-  //     return false;
-  //   }
-  // }
+    if (pwd === newPwd) {
+      this.isConfirmPassMatch.set('match');
+      return true;
+    }
+    else {
+      this.isConfirmPassMatch.set('not-match');
+      return false;
+    }
+  }
 
   isOldPasswordValid(): boolean {
     const oldPasswd = this.oldPasswordControl().value ?? '';
