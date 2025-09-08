@@ -133,11 +133,11 @@ export class BillingComponent implements OnInit {
     inputId.value = String(row.itemId);
     form.appendChild(inputId);
 
-    // const inputValue = document.createElement('input');
-    // inputValue.type = 'hidden';
-    // inputValue.name = 'hdInvoiceOrJobValue';
-    // inputValue.value = String(row.serviceName); 
-    // form.appendChild(inputValue);
+    const inputValue = document.createElement('input');
+    inputValue.type = 'hidden';
+    inputValue.name = 'hdInvoiceOrJobValue';
+    inputValue.value = String(row.serviceName); 
+    form.appendChild(inputValue);
 
     document.body.appendChild(form);
     form.submit();
